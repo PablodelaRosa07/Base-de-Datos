@@ -1,0 +1,44 @@
+CREATE TABLE Estudiante(
+	CodEst number(14),
+	DNI varchar2(9),
+	Nombre varchar2(30),
+	Apellido1 varchar2(30),
+	Apellido2 varchar2(30),
+	Telefono number(9),
+	CONSTRAINT pk_Estudiante PRIMARY KEY(CodEst)
+);
+
+CREATE TABLE Docente(
+	CodProf number(14) PRIMARY KEY,
+	Nombre varchar2(30) NOT NULL,
+	Apellido1 varchar2(30) NOT NULL,
+	Apellido2 varchar2(30),
+	DNI varchar2(9) NOT NULL UNIQUE,
+          fecha_nacimiento DATE,
+	Teléfono number(9)
+);
+
+CREATE TABLE Asignatura(
+   CodAsig VARCHAR(4) PRIMARY KEY,
+   Nombre VARCHAR2(60)
+);
+
+CREATE TABLE Matricula(
+   CodAsig varchar(4) NOT NULL,
+   CodAlumn number(4) NOT NULL,
+ Curso varchar(7) NOT NULL,
+   CONSTRAINT pk_matricula PRIMARY KEY(CodAsig, CodAlumn, Curso),
+   CONSTRAINT fk_matricula_asig FOREIGN KEY (CodAsig) REFERENCES Asignatura(CodAsig) ON DELETE CASCADE,
+   CONSTRAINT fk_matricula_alumn FOREIGN KEY (CodAlumn) REFERENCES Estudiante(CodEst) ON DELETE CASCADE
+);
+DESCRIBE MATRICULA;
+
+CREATE TABLE Libro(
+	CodLibro number(4),
+	ISBN number(14) UNIQUE,
+	Titulo varchar(32) NOT NULL,
+	NumPags number(4),
+	Genero varchar(32) CONSTRAINT ck_genero CHECK(Genero IN('Narrativo','Lírico','Dramático','Didáctico')),
+	CONSTRAINT pk_libro PRIMARY KEY(CodLibro)
+);
+
