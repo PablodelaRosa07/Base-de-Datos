@@ -1,0 +1,106 @@
+CREATE TABLE UNIVERSIDAD (
+    coduniversidad INT PRIMARY KEY,
+    Nombre_Universidad VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE GRADO (
+    codgrado INT PRIMARY KEY,
+    Nombre_Grado VARCHAR(100) NOT NULL,
+    Curso_Grado VARCHAR(50)
+);
+
+CREATE TABLE MASTER (
+    codmaster INT PRIMARY KEY,
+    Nombre_Master VARCHAR(100) NOT NULL,
+    Curso_Master VARCHAR(50)
+);
+
+CREATE TABLE SEDE (
+    codsede INT PRIMARY KEY,
+    Nombre VARCHAR(100) NOT NULL,
+    Direccion VARCHAR(255) UNIQUE
+);
+
+CREATE TABLE PERSONAL (
+    codpersonal INT PRIMARY KEY,
+    DNI VARCHAR(20) UNIQUE NOT NULL,
+    Nombre VARCHAR(50),
+    Ap1 VARCHAR(50),
+    Ap2 VARCHAR(50),
+    Rol VARCHAR(50)
+);
+
+CREATE TABLE LIBRO (
+    codlibro INT PRIMARY KEY,
+    Nombre_Libro VARCHAR(150) NOT NULL,
+    codsede INT,
+    CONSTRAINT fk_sede_libro FOREIGN KEY (codsede) 
+        REFERENCES SEDE(codsede) ON DELETE CASCADE
+);
+
+CREATE TABLE CAMARA (
+    codcamara INT PRIMARY KEY,
+    Nombre_Camara VARCHAR(100),
+    codsede INT,
+    CONSTRAINT fk_sede_camara FOREIGN KEY (codsede) 
+        REFERENCES SEDE(codsede) ON DELETE CASCADE
+);
+
+CREATE TABLE BIBLIOTECA (
+    codbiblioteca INT PRIMARY KEY,
+    codpersonal INT,
+    codlibro INT,
+    codsede INT,
+    CONSTRAINT fk_personal_biblio FOREIGN KEY (codpersonal) 
+        REFERENCES PERSONAL(codpersonal),
+    CONSTRAINT fk_libro_biblio FOREIGN KEY (codlibro) 
+        REFERENCES LIBRO(codlibro),
+    CONSTRAINT fk_sede_biblio FOREIGN KEY (codsede) 
+        REFERENCES SEDE(codsede)
+);
+
+CREATE TABLE ALUMNO (
+    codalumno INT PRIMARY KEY,
+    DNI VARCHAR(20) UNIQUE NOT NULL,
+    Nombre VARCHAR(50) NOT NULL,
+    Ap1 VARCHAR(50) NOT NULL,
+    Ap2 VARCHAR(50),
+    Curso VARCHAR(20),
+    Contacto VARCHAR(100),
+    CONSTRAINT chk_curso_alumno CHECK (Curso IN ('Grado', 'Master', 'Universidad'))
+);
+
+CREATE TABLE PRESTAMO (
+    codprestamo INT PRIMARY KEY,
+    Fecha_Reserva DATE,
+    Fecha_Retiro DATE,
+    Fecha_Devolucion DATE,
+    Estado VARCHAR(15),
+    Dias_Retraso INT DEFAULT 0,
+    CONSTRAINT chk_estado_prestamo CHECK (Estado IN ('Activo', 'Devuelto', 'Perdido', 'Retraso'))
+);
+
+CREATE TABLE SERVICIO_TECNICO (
+    codserviciotecnico INT PRIMARY KEY,
+    codpersonal INT,
+    codcamara INT,
+    codsede INT,
+    CONSTRAINT fk_personal_st FOREIGN KEY (codpersonal) 
+        REFERENCES PERSONAL(codpersonal),
+    CONSTRAINT fk_camara_st FOREIGN KEY (codcamara) 
+        REFERENCES CAMARA(codcamara),
+    CONSTRAINT fk_sede_st FOREIGN KEY (codsede) 
+        REFERENCES SEDE(codsede)
+);
+
+DROP TABLE ALUMNO CASCADE CONSTRAINTS PURGE;
+DROP TABLE BIBLIOTECA CASCADE CONSTRAINTS PURGE;
+DROP TABLE CAMARA CASCADE CONSTRAINTS PURGE;
+DROP TABLE GRADO CASCADE CONSTRAINTS PURGE;
+DROP TABLE LIBRO CASCADE CONSTRAINTS PURGE;
+DROP TABLE MASTER CASCADE CONSTRAINTS PURGE;
+DROP TABLE PERSONAL CASCADE CONSTRAINTS PURGE;
+DROP TABLE PRESTAMO CASCADE CONSTRAINTS PURGE;
+DROP TABLE SEDE CASCADE CONSTRAINTS PURGE;
+DROP TABLE SERVICIO_TECNICO CASCADE CONSTRAINTS PURGE;
+DROP TABLE UNIVERSIDAD CASCADE CONSTRAINTS PURGE;

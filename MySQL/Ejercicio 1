@@ -1,44 +1,72 @@
-CREATE TABLE Estudiante(
-	CodEst number(14),
-	DNI varchar2(9),
-	Nombre varchar2(30),
-	Apellido1 varchar2(30),
-	Apellido2 varchar2(30),
-	Telefono number(9),
-	CONSTRAINT pk_Estudiante PRIMARY KEY(CodEst)
+CREATE TABLE CENTRO (
+    codcentro   NUMBER PRIMARY KEY,
+    Nombre      VARCHAR2(100) UNIQUE NOT NULL,
+    Localidad   VARCHAR2(100)
 );
 
-CREATE TABLE Docente(
-	CodProf number(14) PRIMARY KEY,
-	Nombre varchar2(30) NOT NULL,
-	Apellido1 varchar2(30) NOT NULL,
-	Apellido2 varchar2(30),
-	DNI varchar2(9) NOT NULL UNIQUE,
-          fecha_nacimiento DATE,
-	Teléfono number(9)
+CREATE TABLE DOCENTE (
+    coddocente  NUMBER PRIMARY KEY,
+    DNI         VARCHAR2(20) UNIQUE NOT NULL,
+    Nombre      VARCHAR2(50) NOT NULL,
+    Ap1         VARCHAR2(50) NOT NULL,
+    Ap2         VARCHAR2(50),
+    Email       VARCHAR2(100), 
+    Telefono    VARCHAR2(20)   
 );
 
-CREATE TABLE Asignatura(
-   CodAsig VARCHAR(4) PRIMARY KEY,
-   Nombre VARCHAR2(60)
+CREATE TABLE CURSO_ACADEMICO (
+    codcursoacademico NUMBER PRIMARY KEY,
+    Anio_Inicio       NUMBER(4) NOT NULL,
+    Anio_Fin          NUMBER(4) NOT NULL,
+    Periodo_Academico VARCHAR2(50)
 );
 
-CREATE TABLE Matricula(
-   CodAsig varchar(4) NOT NULL,
-   CodAlumn number(4) NOT NULL,
- Curso varchar(7) NOT NULL,
-   CONSTRAINT pk_matricula PRIMARY KEY(CodAsig, CodAlumn, Curso),
-   CONSTRAINT fk_matricula_asig FOREIGN KEY (CodAsig) REFERENCES Asignatura(CodAsig) ON DELETE CASCADE,
-   CONSTRAINT fk_matricula_alumn FOREIGN KEY (CodAlumn) REFERENCES Estudiante(CodEst) ON DELETE CASCADE
-);
-DESCRIBE MATRICULA;
-
-CREATE TABLE Libro(
-	CodLibro number(4),
-	ISBN number(14) UNIQUE,
-	Titulo varchar(32) NOT NULL,
-	NumPags number(4),
-	Genero varchar(32) CONSTRAINT ck_genero CHECK(Genero IN('Narrativo','Lírico','Dramático','Didáctico')),
-	CONSTRAINT pk_libro PRIMARY KEY(CodLibro)
+CREATE TABLE ESTUDIANTE (
+    codestudiante NUMBER PRIMARY KEY,
+    DNI           VARCHAR2(20) UNIQUE NOT NULL,
+    Nombre        VARCHAR2(50) NOT NULL,
+    Ap1           VARCHAR2(50) NOT NULL,
+    Ap2           VARCHAR2(50),
+    Telefono      VARCHAR2(20) 
 );
 
+
+CREATE TABLE CICLO_FORMATIVO (
+    codcicloformativo NUMBER PRIMARY KEY,
+    Nombre            VARCHAR2(100) NOT NULL,
+    Familia_Profesional VARCHAR2(100),
+    codcentro         NUMBER,
+    CONSTRAINT fk_ciclo_centro FOREIGN KEY (codcentro) 
+        REFERENCES CENTRO(codcentro)
+);
+
+CREATE TABLE MODULO (
+    codmodulo           NUMBER PRIMARY KEY,
+    Nombre              VARCHAR2(100) NOT NULL,
+    Curso               VARCHAR2(50),
+    Horas               NUMBER,
+    codciclo_formativo  NUMBER,
+    CONSTRAINT chk_horas_positivo CHECK (Horas > 0),
+    CONSTRAINT fk_modulo_ciclo FOREIGN KEY (codciclo_formativo) 
+        REFERENCES CICLO_FORMATIVO(codcicloformativo)
+);
+
+CREATE TABLE MATRICULA (
+    codmatricula  NUMBER PRIMARY KEY,
+    codestudiante NUMBER,
+    codmodulo     NUMBER,
+    Nota          NUMBER(4,2),
+    Estado        VARCHAR2(20),
+    CONSTRAINT fk_matri_estud FOREIGN KEY (codestudiante) 
+        REFERENCES ESTUDIANTE(codestudiante),
+    CONSTRAINT fk_matri_modulo FOREIGN KEY (codmodulo) 
+        REFERENCES MODULO(codmodulo)
+);
+
+DROP TABLE CENTRO CASCADE CONSTRAINTS PURGE;
+DROP TABLE CICLO_FORMATIVO CASCADE CONSTRAINTS PURGE;
+DROP TABLE CURSO_ACADEMICO CASCADE CONSTRAINTS PURGE;
+DROP TABLE DOCENTE CASCADE CONSTRAINTS PURGE;
+DROP TABLE ESTUDIANTE CASCADE CONSTRAINTS PURGE;
+DROP TABLE MODULO CASCADE CONSTRAINTS PURGE;
+DROP TABLE MATRICULA CASCADE CONSTRAINTS PURGE;

@@ -1,0 +1,82 @@
+CREATE TABLE MARCA (
+    codmarca      NUMBER PRIMARY KEY,
+    Nombre        VARCHAR2(100) UNIQUE NOT NULL,
+    Descripcion   VARCHAR2(500),
+    Pais_Origen   VARCHAR2(100),
+    Historial     VARCHAR2(1000)
+);
+
+CREATE TABLE MODELO (
+    codmodelo         NUMBER PRIMARY KEY,
+    Nombre_Modelo     VARCHAR2(100) UNIQUE NOT NULL,
+    Lugar_Fabricacion VARCHAR2(100),
+    Fecha_Fabricacion DATE,
+    Tipo_Vehiculo     VARCHAR2(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE CLIENTE (
+    codcliente     NUMBER PRIMARY KEY,
+    DNI            VARCHAR2(20) UNIQUE NOT NULL,
+    Nombre         VARCHAR2(50) NOT NULL,
+    Ap1            VARCHAR2(50) NOT NULL,
+    Ap2            VARCHAR2(50),
+    Contacto       VARCHAR2(100), 
+    Direccion      VARCHAR2(255),
+    Fecha_Registro DATE UNIQUE NOT NULL
+);
+
+CREATE TABLE OFICINA (
+    codoficina     NUMBER PRIMARY KEY,
+    Nombre_Oficina VARCHAR2(100),
+    Direccion      VARCHAR2(255) UNIQUE NOT NULL
+);
+
+CREATE TABLE CURSO (
+    codcurso     NUMBER PRIMARY KEY,
+    Nombre_Curso VARCHAR2(100) UNIQUE NOT NULL,
+    Tipo_Curso   VARCHAR2(50)
+);
+
+CREATE TABLE EMPLEADO (
+    codempleado        NUMBER PRIMARY KEY,
+    DNI                VARCHAR2(20) UNIQUE NOT NULL,
+    Nombre             VARCHAR2(50) NOT NULL,
+    Ap1                VARCHAR2(50) NOT NULL,
+    Ap2                VARCHAR2(50),
+    Contacto           VARCHAR2(100), 
+    Puesto             VARCHAR2(50),
+    Fecha_Contratacion DATE UNIQUE NOT NULL
+);
+
+CREATE TABLE VEHICULO (
+    codvehiculo NUMBER PRIMARY KEY,
+    Matricula   VARCHAR2(20) UNIQUE NOT NULL,
+    Anio_Compra NUMBER(4),
+    Estado      VARCHAR2(20),
+    codmodelo   NUMBER,
+    codmarca    NUMBER,
+    CONSTRAINT chk_estado_vehiculo 
+        CHECK (Estado IN ('Disponible', 'Alquilado', 'En Taller', 'Baja')),
+    CONSTRAINT fk_veh_modelo FOREIGN KEY (codmodelo) REFERENCES MODELO(codmodelo),
+    CONSTRAINT fk_veh_marca  FOREIGN KEY (codmarca)  REFERENCES MARCA(codmarca)
+);
+
+CREATE TABLE ALQUILER (
+    codalquiler     NUMBER PRIMARY KEY,
+    Fecha_Inicio    DATE NOT NULL,
+    Fecha_Fin       DATE,
+    Precio_Total    NUMBER(10,2),
+    Estado_Alquiler VARCHAR2(20),
+    CONSTRAINT chk_precio_alquiler CHECK (Precio_Total > 0),
+    CONSTRAINT chk_estado_alquiler 
+        CHECK (Estado_Alquiler IN ('Reservado', 'Activo', 'Finalizado', 'Cancelado'))
+);
+
+DROP TABLE ALQUILER CASCADE CONSTRAINTS PURGE;
+DROP TABLE CLIENTE CASCADE CONSTRAINTS PURGE;
+DROP TABLE CURSO CASCADE CONSTRAINTS PURGE;
+DROP TABLE EMPLEADO CASCADE CONSTRAINTS PURGE;
+DROP TABLE MARCA CASCADE CONSTRAINTS PURGE;
+DROP TABLE MODELO CASCADE CONSTRAINTS PURGE;
+DROP TABLE OFICINA CASCADE CONSTRAINTS PURGE;
+DROP TABLE VEHICULO CASCADE CONSTRAINTS PURGE;

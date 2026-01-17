@@ -1,0 +1,80 @@
+--- 1. TABLAS MAESTRAS (Sin Dependencias) ---
+
+CREATE TABLE SEDE (
+    codsede   NUMBER PRIMARY KEY,
+    Nombre    VARCHAR2(100) UNIQUE NOT NULL,
+    Direccion VARCHAR2(255)
+);
+
+CREATE TABLE DEPARTAMENTO (
+    coddepartamento NUMBER PRIMARY KEY,
+    Nombre          VARCHAR2(100) UNIQUE NOT NULL,
+    Direccion       VARCHAR2(255)
+);
+
+CREATE TABLE EQUIPO (
+    codequipo     NUMBER PRIMARY KEY,
+    Nombre_Equipo VARCHAR2(100) UNIQUE NOT NULL,
+    Descripcion   VARCHAR2(500)
+);
+
+--- 2. PROYECTO (Con Restricción CHECK) ---
+
+CREATE TABLE PROYECTO (
+    codproyecto     NUMBER PRIMARY KEY,
+    Nombre_Proyecto VARCHAR2(100) UNIQUE NOT NULL,
+    Descripcion     VARCHAR2(500),
+    Fecha_Inicio    DATE NOT NULL,
+    Fecha_Fin       DATE,
+    Estado          VARCHAR2(20),
+    Subproyecto     VARCHAR2(100), -- N (Permite nulo)
+    CONSTRAINT chk_estado_proyecto 
+        CHECK (Estado IN ('Propuesta', 'En Curso', 'Pausado', 'Finalizado'))
+);
+
+--- 3. PERSONAL Y ROLES (Con Claves Foráneas) ---
+
+CREATE TABLE PROGRAMADOR (
+    codprogramador  NUMBER PRIMARY KEY,
+    DNI             VARCHAR2(20) UNIQUE NOT NULL,
+    Nombre          VARCHAR2(50) NOT NULL,
+    Ap1             VARCHAR2(50) NOT NULL,
+    Ap2             VARCHAR2(50),
+    Email           VARCHAR2(100), -- N (Permite nulo)
+    coddepartamento NUMBER,
+    codequipo       NUMBER,
+    CONSTRAINT fk_prog_depto FOREIGN KEY (coddepartamento) 
+        REFERENCES DEPARTAMENTO(coddepartamento),
+    CONSTRAINT fk_prog_equipo FOREIGN KEY (codequipo) 
+        REFERENCES EQUIPO(codequipo)
+);
+
+CREATE TABLE SENIOR (
+    codsenior       NUMBER PRIMARY KEY,
+    DNI             VARCHAR2(20) UNIQUE NOT NULL,
+    coddepartamento NUMBER,
+    codsede         NUMBER,
+    CONSTRAINT fk_senior_depto FOREIGN KEY (coddepartamento) 
+        REFERENCES DEPARTAMENTO(coddepartamento),
+    CONSTRAINT fk_senior_sede FOREIGN KEY (codsede) 
+        REFERENCES SEDE(codsede)
+);
+
+CREATE TABLE JUNIOR (
+    codjunior       NUMBER PRIMARY KEY,
+    DNI             VARCHAR2(20) UNIQUE NOT NULL,
+    coddepartamento NUMBER,
+    codsede         NUMBER,
+    CONSTRAINT fk_junior_depto FOREIGN KEY (coddepartamento) 
+        REFERENCES DEPARTAMENTO(coddepartamento),
+    CONSTRAINT fk_junior_sede FOREIGN KEY (codsede) 
+        REFERENCES SEDE(codsede)
+);
+
+DROP TABLE DEPARTAMENTO CASCADE CONSTRAINTS PURGE;
+DROP TABLE EQUIPO CASCADE CONSTRAINTS PURGE;
+DROP TABLE JUNIOR CASCADE CONSTRAINTS PURGE;
+DROP TABLE PROGRAMADOR CASCADE CONSTRAINTS PURGE;
+DROP TABLE PROYECTO CASCADE CONSTRAINTS PURGE;
+DROP TABLE SEDE CASCADE CONSTRAINTS PURGE;
+DROP TABLE SENIOR CASCADE CONSTRAINTS PURGE;
