@@ -1,11 +1,11 @@
 CREATE TABLE CENTRO (
-    codcentro   NUMBER PRIMARY KEY,
+    codcentro   NUMBER(14) PRIMARY KEY,
     Nombre      VARCHAR2(100) UNIQUE NOT NULL,
     Localidad   VARCHAR2(100)
 );
 
 CREATE TABLE DOCENTE (
-    coddocente  NUMBER PRIMARY KEY,
+    coddocente  NUMBER(14) PRIMARY KEY,
     DNI         VARCHAR2(20) UNIQUE NOT NULL,
     Nombre      VARCHAR2(50) NOT NULL,
     Ap1         VARCHAR2(50) NOT NULL,
@@ -15,14 +15,14 @@ CREATE TABLE DOCENTE (
 );
 
 CREATE TABLE CURSO_ACADEMICO (
-    codcursoacademico NUMBER PRIMARY KEY,
-    Anio_Inicio       NUMBER(4) NOT NULL,
-    Anio_Fin          NUMBER(4) NOT NULL,
+    codcursoacademico NUMBER(14) PRIMARY KEY,
+    Anio_Inicio       NUMBER(14)(4) NOT NULL,
+    Anio_Fin          NUMBER(14)(4) NOT NULL,
     Periodo_Academico VARCHAR2(50)
 );
 
 CREATE TABLE ESTUDIANTE (
-    codestudiante NUMBER PRIMARY KEY,
+    codestudiante NUMBER(14) PRIMARY KEY,
     DNI           VARCHAR2(20) UNIQUE NOT NULL,
     Nombre        VARCHAR2(50) NOT NULL,
     Ap1           VARCHAR2(50) NOT NULL,
@@ -32,30 +32,30 @@ CREATE TABLE ESTUDIANTE (
 
 
 CREATE TABLE CICLO_FORMATIVO (
-    codcicloformativo NUMBER PRIMARY KEY,
+    codcicloformativo NUMBER(14) PRIMARY KEY,
     Nombre            VARCHAR2(100) NOT NULL,
     Familia_Profesional VARCHAR2(100),
-    codcentro         NUMBER,
+    codcentro         NUMBER(14),
     CONSTRAINT fk_ciclo_centro FOREIGN KEY (codcentro) 
         REFERENCES CENTRO(codcentro)
 );
 
 CREATE TABLE MODULO (
-    codmodulo           NUMBER PRIMARY KEY,
+    codmodulo           NUMBER(14) PRIMARY KEY,
     Nombre              VARCHAR2(100) NOT NULL,
     Curso               VARCHAR2(50),
-    Horas               NUMBER,
-    codciclo_formativo  NUMBER,
+    Horas               NUMBER(14),
+    codciclo_formativo  NUMBER(14),
     CONSTRAINT chk_horas_positivo CHECK (Horas > 0),
     CONSTRAINT fk_modulo_ciclo FOREIGN KEY (codciclo_formativo) 
         REFERENCES CICLO_FORMATIVO(codcicloformativo)
 );
 
 CREATE TABLE MATRICULA (
-    codmatricula  NUMBER PRIMARY KEY,
-    codestudiante NUMBER,
-    codmodulo     NUMBER,
-    Nota          NUMBER(4,2),
+    codmatricula  NUMBER(14) PRIMARY KEY,
+    codestudiante NUMBER(14),
+    codmodulo     NUMBER(14),
+    Nota          NUMBER(14)(4,2),
     Estado        VARCHAR2(20),
     CONSTRAINT fk_matri_estud FOREIGN KEY (codestudiante) 
         REFERENCES ESTUDIANTE(codestudiante),

@@ -1,19 +1,19 @@
 --- 1. TABLAS MAESTRAS (Sin Dependencias) ---
 
 CREATE TABLE SEDE (
-    codsede   NUMBER PRIMARY KEY,
+    codsede   NUMBER(14) PRIMARY KEY,
     Nombre    VARCHAR2(100) UNIQUE NOT NULL,
     Direccion VARCHAR2(255)
 );
 
 CREATE TABLE DEPARTAMENTO (
-    coddepartamento NUMBER PRIMARY KEY,
+    coddepartamento NUMBER(14) PRIMARY KEY,
     Nombre          VARCHAR2(100) UNIQUE NOT NULL,
     Direccion       VARCHAR2(255)
 );
 
 CREATE TABLE EQUIPO (
-    codequipo     NUMBER PRIMARY KEY,
+    codequipo     NUMBER(14) PRIMARY KEY,
     Nombre_Equipo VARCHAR2(100) UNIQUE NOT NULL,
     Descripcion   VARCHAR2(500)
 );
@@ -21,7 +21,7 @@ CREATE TABLE EQUIPO (
 --- 2. PROYECTO (Con Restricción CHECK) ---
 
 CREATE TABLE PROYECTO (
-    codproyecto     NUMBER PRIMARY KEY,
+    codproyecto     NUMBER(14) PRIMARY KEY,
     Nombre_Proyecto VARCHAR2(100) UNIQUE NOT NULL,
     Descripcion     VARCHAR2(500),
     Fecha_Inicio    DATE NOT NULL,
@@ -35,14 +35,14 @@ CREATE TABLE PROYECTO (
 --- 3. PERSONAL Y ROLES (Con Claves Foráneas) ---
 
 CREATE TABLE PROGRAMADOR (
-    codprogramador  NUMBER PRIMARY KEY,
+    codprogramador  NUMBER(14) PRIMARY KEY,
     DNI             VARCHAR2(20) UNIQUE NOT NULL,
     Nombre          VARCHAR2(50) NOT NULL,
     Ap1             VARCHAR2(50) NOT NULL,
     Ap2             VARCHAR2(50),
     Email           VARCHAR2(100), -- N (Permite nulo)
-    coddepartamento NUMBER,
-    codequipo       NUMBER,
+    coddepartamento NUMBER(14),
+    codequipo       NUMBER(14),
     CONSTRAINT fk_prog_depto FOREIGN KEY (coddepartamento) 
         REFERENCES DEPARTAMENTO(coddepartamento),
     CONSTRAINT fk_prog_equipo FOREIGN KEY (codequipo) 
@@ -50,10 +50,10 @@ CREATE TABLE PROGRAMADOR (
 );
 
 CREATE TABLE SENIOR (
-    codsenior       NUMBER PRIMARY KEY,
+    codsenior       NUMBER(14) PRIMARY KEY,
     DNI             VARCHAR2(20) UNIQUE NOT NULL,
-    coddepartamento NUMBER,
-    codsede         NUMBER,
+    coddepartamento NUMBER(14),
+    codsede         NUMBER(14),
     CONSTRAINT fk_senior_depto FOREIGN KEY (coddepartamento) 
         REFERENCES DEPARTAMENTO(coddepartamento),
     CONSTRAINT fk_senior_sede FOREIGN KEY (codsede) 
@@ -61,10 +61,10 @@ CREATE TABLE SENIOR (
 );
 
 CREATE TABLE JUNIOR (
-    codjunior       NUMBER PRIMARY KEY,
+    codjunior       NUMBER(14) PRIMARY KEY,
     DNI             VARCHAR2(20) UNIQUE NOT NULL,
-    coddepartamento NUMBER,
-    codsede         NUMBER,
+    coddepartamento NUMBER(14),
+    codsede         NUMBER(14),
     CONSTRAINT fk_junior_depto FOREIGN KEY (coddepartamento) 
         REFERENCES DEPARTAMENTO(coddepartamento),
     CONSTRAINT fk_junior_sede FOREIGN KEY (codsede) 
