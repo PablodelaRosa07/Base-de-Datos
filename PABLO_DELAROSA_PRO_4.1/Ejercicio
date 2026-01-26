@@ -1,0 +1,121 @@
+CREATE TABLE ORGANISATION (
+    Organisation_Code   NUMBER(14) PRIMARY KEY,
+    Names               VARCHAR2(100) NOT NULL,
+    Type_Organisation   VARCHAR2(50),
+    Sector              VARCHAR2(100),
+    Direction           VARCHAR2(150),
+    Contact_Telephone   VARCHAR2(20),
+    Financing_Type      VARCHAR2(50),
+    Contact_Email       VARCHAR2(120),
+    Budget              NUMBER(14,2) NOT NULL,
+    Registration_Date   DATE NOT NULL,
+    Activity_Status     VARCHAR2(20),
+
+    CONSTRAINT chk_org_budget CHECK (Budget > 0),
+    CONSTRAINT chk_org_status CHECK (Activity_Status IN ('Active','Inactive','Suspended')),
+    CONSTRAINT chk_org_email CHECK (REGEXP_LIKE(Contact_Email, '^[^@]+@[^@]+\.[^@]+$'))
+);
+
+CREATE TABLE PUBLISH (
+    Public_Code        NUMBER(14) PRIMARY KEY,
+    Public_Funding     NUMBER(14,2) NOT NULL,
+    Head_Financing     VARCHAR2(100),
+    Unanimity_Decisions VARCHAR2(5),
+    Organisation_Code  NUMBER(14),
+
+    CONSTRAINT chk_pub_funding CHECK (Public_Funding >= 0),
+    CONSTRAINT fk_publish_org FOREIGN KEY (Organisation_Code)
+        REFERENCES ORGANISATION(Organisation_Code)
+);
+
+CREATE TABLE PRIVATE (
+    Private_Code       NUMBER(14) PRIMARY KEY,
+    Private_Financing  NUMBER(14,2) NOT NULL,
+    Advertising        VARCHAR2(200),
+    Organisation_Code  NUMBER(14),
+
+    CONSTRAINT chk_priv_funding CHECK (Private_Financing >= 0),
+    CONSTRAINT fk_private_org FOREIGN KEY (Organisation_Code)
+        REFERENCES ORGANISATION(Organisation_Code)
+);
+
+CREATE TABLE ACTION (
+    Actions_Code       NUMBER(14) PRIMARY KEY,
+    Name_Action        VARCHAR2(100) NOT NULL,
+    Type_Action        VARCHAR2(50),
+    Description        VARCHAR2(500),
+    Start_Date         DATE NOT NULL,
+    End_Date           DATE NOT NULL,
+    Budget             NUMBER(14,2) NOT NULL,
+    Expected_Result    VARCHAR2(500),
+    State_Action       VARCHAR2(50),
+    Impact_Assessment  VARCHAR2(500),
+    Duration           NUMBER(14) NOT NULL,
+
+    CONSTRAINT chk_action_budget CHECK (Budget > 0),
+    CONSTRAINT chk_action_dates CHECK (Start_Date <= End_Date),
+    CONSTRAINT chk_action_duration CHECK (Duration > 0)
+);
+
+CREATE TABLE VOLUNTEER (
+    Volunteer_Code     NUMBER(14) PRIMARY KEY,
+    DNI                VARCHAR2(9) NOT NULL,
+    Name               VARCHAR2(50),
+    Surname1           VARCHAR2(50),
+    Surname2           VARCHAR2(50),
+    Age                NUMBER(14) NOT NULL,
+    Start_Date         DATE NOT NULL,
+    End_Date           DATE NOT NULL,
+    Contact            VARCHAR2(100),
+    Specialisation     VARCHAR2(100),
+    Contract_Duration  NUMBER(14) NOT NULL,
+
+    CONSTRAINT chk_vol_age CHECK (Age >= 18),
+    CONSTRAINT chk_vol_duration CHECK (Contract_Duration > 0),
+    CONSTRAINT chk_vol_dates CHECK (Start_Date <= End_Date),
+    CONSTRAINT chk_vol_dni CHECK (REGEXP_LIKE(DNI, '^[0-9]{8}[A-Z]$'))
+);
+
+CREATE TABLE AREA (
+    Area_Code              NUMBER(14) PRIMARY KEY,
+    Atmosphere             VARCHAR2(100),
+    Postcode               VARCHAR2(10),
+    Community              VARCHAR2(100),
+    GDP_Area               NUMBER(14,2),
+    Aid_Received           NUMBER(14,2),
+    Accessibility_Logistics VARCHAR2(200),
+    Unemployment_Rate      NUMBER(5,2),
+    Average_Education      NUMBER(5,2),
+
+    CONSTRAINT chk_area_unemployment CHECK (Unemployment_Rate BETWEEN 0 AND 100),
+    CONSTRAINT chk_area_education CHECK (Average_Education BETWEEN 0 AND 100),
+    CONSTRAINT chk_area_aid CHECK (Aid_Received >= 0)
+);
+
+CREATE TABLE LOGISTICS (
+    Logistics_Code     NUMBER(14) PRIMARY KEY,
+    Transport          VARCHAR2(100),
+    Goods              VARCHAR2(100),
+    DNI                VARCHAR2(9),
+    Resource_Allocation VARCHAR2(200),
+    In_Charge          VARCHAR2(100),
+    Cost               NUMBER(14,2) NOT NULL,
+    Budget             NUMBER(14,2) NOT NULL,
+    Direction_Exit     VARCHAR2(100),
+    Directions_Arrival VARCHAR2(100),
+
+    CONSTRAINT chk_log_cost CHECK (Cost > 0),
+    CONSTRAINT chk_log_budget CHECK (Budget >= Cost),
+    CONSTRAINT chk_log_dni CHECK (REGEXP_LIKE(DNI, '^[0-9]{8}[A-Z]$')),
+    CONSTRAINT chk_log_country CHECK (
+        Direction_Exit = 'Spain' AND Directions_Arrival = 'Spain'
+    )
+);
+
+DROP TABLE LOGISTICS CASCADE CONSTRAINTS PURGE;
+DROP TABLE AREA CASCADE CONSTRAINTS PURGE;
+DROP TABLE VOLUNTEER CASCADE CONSTRAINTS PURGE;
+DROP TABLE ACTION CASCADE CONSTRAINTS PURGE;
+DROP TABLE PRIVATE CASCADE CONSTRAINTS PURGE;
+DROP TABLE PUBLISH CASCADE CONSTRAINTS PURGE;
+DROP TABLE ORGANISATION CASCADE CONSTRAINTS PURGE;
