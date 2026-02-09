@@ -1,4 +1,4 @@
-/* TABLAS MAESTRAS */
+/* 1. TABLAS MAESTRAS */
 CREATE TABLE MARCA (
     codmarca      NUMBER(14) PRIMARY KEY,
     Nombre        VARCHAR2(50) UNIQUE NOT NULL,
@@ -84,7 +84,34 @@ CREATE TABLE ALQUILER (
 );
 
 
-/* ELIMINACIÓN DE TABLAS */
+/* 2. INSERCIÓN DE DATOS */
+
+INSERT INTO MARCA (codmarca, Nombre, Descripcion, Pais_Origen, Historial)
+VALUES (1, 'Toyota', 'Líder en fiabilidad y vehículos híbridos', 'Japón', 'Fundada en 1937');
+
+INSERT INTO OFICINA (codoficina, Nombre_Oficina, Direccion)
+VALUES (10, 'Oficina Central Atocha', 'Calle de Méndez Álvaro, 1, Madrid');
+
+INSERT INTO CLIENTE (codcliente, DNI, Nombre, Ap1, Ap2, Contacto, Direccion, Fecha_Registro)
+VALUES (100, '12345678Z', 'Lucía', 'Fernández', 'Ruiz', 'lucia.fer@email.com', 'Calle Mayor 15, Madrid', SYSDATE - 30);
+
+INSERT INTO CURSO (codcurso, Nombre_Curso, Tipo_Curso)
+VALUES (500, 'Atención al Cliente Premium', 'Ventas');
+
+INSERT INTO MODELO (codmodelo, Nombre_Modelo, Lugar_Fabricacion, Fecha_Fabricacion, Tipo_Vehiculo, codmarca)
+VALUES (20, 'Corolla Hybrid', 'Toyota City', TO_DATE('2023-05-15', 'YYYY-MM-DD'), 'Turismo', 1);
+
+INSERT INTO EMPLEADO (codempleado, DNI, Nombre, Ap1, Ap2, Contacto, Puesto, Fecha_Contratacion, codoficina)
+VALUES (1000, '87654321X', 'Javier', 'Gómez', 'Pascual', 'j.gomez@rentacar.com', 'Agente de Ventas', TO_DATE('2022-01-10', 'YYYY-MM-DD'), 10);
+
+INSERT INTO VEHICULO (codvehiculo, Matricula, Anio_Compra, Estado, codmodelo, codoficina)
+VALUES (5000, '1234-LMX', 2023, 'Disponible', 20, 10);
+
+INSERT INTO ALQUILER (codalquiler, Fecha_Inicio, Fecha_Fin, Precio_Total, Estado_Alquiler, codcliente, codvehiculo, codempleado)
+VALUES (9000, SYSDATE, SYSDATE + 7, 350.50, 'Activo', 100, 5000, 1000);
+
+
+/* 3. ELIMINACIÓN DE TABLAS */
 
 DROP TABLE ALQUILER CASCADE CONSTRAINTS PURGE;
 DROP TABLE VEHICULO CASCADE CONSTRAINTS PURGE;

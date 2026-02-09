@@ -1,4 +1,4 @@
-/* CREACIÓN DE TABLAS */
+/* 1. CREACIÓN DE TABLAS */
 
 CREATE TABLE UNIVERSIDAD (
     coduniversidad INT PRIMARY KEY,
@@ -95,8 +95,48 @@ CREATE TABLE SERVICIO_TECNICO (
         REFERENCES SEDE(codsede)
 );
 
+/* 2. INSERCIÓN DE DATOS */
 
-/* ELIMINACIÓN DE TABLAS */
+INSERT INTO UNIVERSIDAD (coduniversidad, Nombre_Universidad) 
+VALUES (1, 'Universidad Complutense de Madrid');
+
+INSERT INTO GRADO (codgrado, Nombre_Grado, Curso_Grado) 
+VALUES (1, 'Ingeniería Informática', '2023-2024');
+
+INSERT INTO MASTER (codmaster, Nombre_Master, Curso_Master) 
+VALUES (1, 'Inteligencia Artificial', '2024-2025');
+
+INSERT INTO SEDE (codsede, Nombre, Direccion) 
+VALUES (1, 'Campus Central', 'Calle de la Victoria, 25');
+INSERT INTO SEDE (codsede, Nombre, Direccion) 
+VALUES (2, 'Campus Tecnológico', 'Avenida del Software, 10');
+
+INSERT INTO PERSONAL (codpersonal, DNI, Nombre, Ap1, Ap2, Rol) 
+VALUES (1, '12345678A', 'Juan', 'Pérez', 'García', 'Bibliotecario');
+INSERT INTO PERSONAL (codpersonal, DNI, Nombre, Ap1, Ap2, Rol) 
+VALUES (2, '87654321B', 'Ana', 'López', 'Sánchez', 'Técnico');
+
+INSERT INTO LIBRO (codlibro, Nombre_Libro, codsede) 
+VALUES (1, 'Fundamentos de SQL', 1);
+
+INSERT INTO CAMARA (codcamara, Nombre_Camara, codsede) 
+VALUES (1, 'Nikon D850 - Vigilancia 01', 2);
+
+INSERT INTO ALUMNO (codalumno, DNI, Nombre, Ap1, Ap2, Curso, Contacto) 
+VALUES (1, '11223344C', 'Carlos', 'Ruiz', 'Mera', 'Grado', 'carlos.ruiz@email.com');
+
+INSERT INTO PRESTAMO (codprestamo, Fecha_Reserva, Fecha_Retiro, Fecha_Devolucion, Estado, Dias_Retraso) 
+VALUES (1, TO_DATE('2024-02-01', 'YYYY-MM-DD'), TO_DATE('2024-02-02', 'YYYY-MM-DD'), NULL, 'Activo', 0);
+
+INSERT INTO BIBLIOTECA (codbiblioteca, codpersonal, codlibro, codsede) 
+VALUES (1, 1, 1, 1);
+
+INSERT INTO SERVICIO_TECNICO (codserviciotecnico, codpersonal, codcamara, codsede) 
+VALUES (1, 2, 1, 2);
+
+
+
+/* 3. ELIMINACIÓN DE TABLAS */
 
 DROP TABLE ALUMNO CASCADE CONSTRAINTS PURGE;
 DROP TABLE BIBLIOTECA CASCADE CONSTRAINTS PURGE;
