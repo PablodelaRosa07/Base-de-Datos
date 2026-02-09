@@ -1,9 +1,10 @@
+/* TABLAS MAESTRAS */
 CREATE TABLE MARCA (
     codmarca      NUMBER(14) PRIMARY KEY,
-    Nombre        VARCHAR2(100) UNIQUE NOT NULL,
-    Descripcion   VARCHAR2(500),
-    Pais_Origen   VARCHAR2(100),
-    Historial     VARCHAR2(1000)
+    Nombre        VARCHAR2(50) UNIQUE NOT NULL,
+    Descripcion   VARCHAR2(200),
+    Pais_Origen   VARCHAR2(50),
+    Historial     VARCHAR2(100)
 );
 
 CREATE TABLE MODELO (
@@ -11,7 +12,9 @@ CREATE TABLE MODELO (
     Nombre_Modelo     VARCHAR2(100) UNIQUE NOT NULL,
     Lugar_Fabricacion VARCHAR2(100),
     Fecha_Fabricacion DATE,
-    Tipo_Vehiculo     VARCHAR2(50) UNIQUE NOT NULL
+    Tipo_Vehiculo     VARCHAR2(50) NOT NULL, 
+    codmarca          NUMBER(14),
+    CONSTRAINT fk_mod_marca FOREIGN KEY (codmarca) REFERENCES MARCA(codmarca)
 );
 
 CREATE TABLE CLIENTE (
@@ -22,7 +25,7 @@ CREATE TABLE CLIENTE (
     Ap2            VARCHAR2(50),
     Contacto       VARCHAR2(100), 
     Direccion      VARCHAR2(255),
-    Fecha_Registro DATE UNIQUE NOT NULL
+    Fecha_Registro DATE NOT NULL 
 );
 
 CREATE TABLE OFICINA (
@@ -45,38 +48,49 @@ CREATE TABLE EMPLEADO (
     Ap2                VARCHAR2(50),
     Contacto           VARCHAR2(100), 
     Puesto             VARCHAR2(50),
-    Fecha_Contratacion DATE UNIQUE NOT NULL
+    Fecha_Contratacion DATE NOT NULL, 
+    codoficina         NUMBER(14),
+    CONSTRAINT fk_emp_oficina FOREIGN KEY (codoficina) REFERENCES OFICINA(codoficina)
 );
 
 CREATE TABLE VEHICULO (
     codvehiculo NUMBER(14) PRIMARY KEY,
     Matricula   VARCHAR2(20) UNIQUE NOT NULL,
-    Anio_Compra NUMBER(14)(4),
+    Anio_Compra NUMBER(4), 
     Estado      VARCHAR2(20),
     codmodelo   NUMBER(14),
-    codmarca    NUMBER(14),
+    codoficina  NUMBER(14), 
     CONSTRAINT chk_estado_vehiculo 
         CHECK (Estado IN ('Disponible', 'Alquilado', 'En Taller', 'Baja')),
     CONSTRAINT fk_veh_modelo FOREIGN KEY (codmodelo) REFERENCES MODELO(codmodelo),
-    CONSTRAINT fk_veh_marca  FOREIGN KEY (codmarca)  REFERENCES MARCA(codmarca)
+    CONSTRAINT fk_veh_oficina FOREIGN KEY (codoficina) REFERENCES OFICINA(codoficina)
 );
 
 CREATE TABLE ALQUILER (
     codalquiler     NUMBER(14) PRIMARY KEY,
     Fecha_Inicio    DATE NOT NULL,
     Fecha_Fin       DATE,
-    Precio_Total    NUMBER(14)(10,2),
+    Precio_Total    NUMBER(10,2), 
     Estado_Alquiler VARCHAR2(20),
+    codcliente      NUMBER(14),
+    codvehiculo     NUMBER(14),
+    codempleado     NUMBER(14),
     CONSTRAINT chk_precio_alquiler CHECK (Precio_Total > 0),
     CONSTRAINT chk_estado_alquiler 
-        CHECK (Estado_Alquiler IN ('Reservado', 'Activo', 'Finalizado', 'Cancelado'))
+        CHECK (Estado_Alquiler IN ('Reservado', 'Activo', 'Finalizado', 'Cancelado')),
+    CONSTRAINT fk_alq_cli FOREIGN KEY (codcliente)  REFERENCES CLIENTE(codcliente),
+    CONSTRAINT fk_alq_veh FOREIGN KEY (codvehiculo) REFERENCES VEHICULO(codvehiculo),
+    CONSTRAINT fk_alq_emp FOREIGN KEY (codempleado) REFERENCES EMPLEADO(codempleado)
 );
 
+
+/* ELIMINACIÓN DE TABLAS */
+
 DROP TABLE ALQUILER CASCADE CONSTRAINTS PURGE;
-DROP TABLE CLIENTE CASCADE CONSTRAINTS PURGE;
-DROP TABLE CURSO CASCADE CONSTRAINTS PURGE;
-DROP TABLE EMPLEADO CASCADE CONSTRAINTS PURGE;
-DROP TABLE MARCA CASCADE CONSTRAINTS PURGE;
-DROP TABLE MODELO CASCADE CONSTRAINTS PURGE;
-DROP TABLE OFICINA CASCADE CONSTRAINTS PURGE;
 DROP TABLE VEHICULO CASCADE CONSTRAINTS PURGE;
+DROP TABLE EMPLEADO CASCADE CONSTRAINTS PURGE;
+DROP TABLE CURSO CASCADE CONSTRAINTS PURGE;
+DROP TABLE OFICINA CASCADE CONSTRAINTS PURGE;
+DROP TABLE CLIENTE CASCADE CONSTRAINTS PURGE;
+DROP TABLE MODELO CASCADE CONSTRAINTS PURGE;
+DROP TABLE MARCA CASCADE CONSTRAINTS PURGE;

@@ -1,4 +1,3 @@
-
 CREATE TABLE ORGANISATION (
     Organisation_Code   NUMBER(14) PRIMARY KEY,
     Name                VARCHAR2(100) NOT NULL,

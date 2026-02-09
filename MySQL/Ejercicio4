@@ -1,4 +1,4 @@
---- 1. TABLAS MAESTRAS (Sin Dependencias) ---
+/* CREACIÓN DE TABLAS */
 
 CREATE TABLE SEDE (
     codsede   NUMBER(14) PRIMARY KEY,
@@ -18,7 +18,6 @@ CREATE TABLE EQUIPO (
     Descripcion   VARCHAR2(500)
 );
 
---- 2. PROYECTO (Con Restricción CHECK) ---
 
 CREATE TABLE PROYECTO (
     codproyecto     NUMBER(14) PRIMARY KEY,
@@ -27,12 +26,10 @@ CREATE TABLE PROYECTO (
     Fecha_Inicio    DATE NOT NULL,
     Fecha_Fin       DATE,
     Estado          VARCHAR2(20),
-    Subproyecto     VARCHAR2(100), -- N (Permite nulo)
+    Subproyecto     VARCHAR2(100), 
     CONSTRAINT chk_estado_proyecto 
         CHECK (Estado IN ('Propuesta', 'En Curso', 'Pausado', 'Finalizado'))
 );
-
---- 3. PERSONAL Y ROLES (Con Claves Foráneas) ---
 
 CREATE TABLE PROGRAMADOR (
     codprogramador  NUMBER(14) PRIMARY KEY,
@@ -40,7 +37,7 @@ CREATE TABLE PROGRAMADOR (
     Nombre          VARCHAR2(50) NOT NULL,
     Ap1             VARCHAR2(50) NOT NULL,
     Ap2             VARCHAR2(50),
-    Email           VARCHAR2(100), -- N (Permite nulo)
+    Email           VARCHAR2(100), 
     coddepartamento NUMBER(14),
     codequipo       NUMBER(14),
     CONSTRAINT fk_prog_depto FOREIGN KEY (coddepartamento) 
@@ -70,6 +67,9 @@ CREATE TABLE JUNIOR (
     CONSTRAINT fk_junior_sede FOREIGN KEY (codsede) 
         REFERENCES SEDE(codsede)
 );
+
+
+/* ELIMINACIÓN DE TABLAS */
 
 DROP TABLE DEPARTAMENTO CASCADE CONSTRAINTS PURGE;
 DROP TABLE EQUIPO CASCADE CONSTRAINTS PURGE;
