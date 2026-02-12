@@ -11,20 +11,17 @@ CREATE TABLE ORGANISATION (
     Budget             NUMBER(14,2),
     Registration_Date  DATE,
     Activity_Status    VARCHAR2(20),
-    
     CONSTRAINT chk_org_budget CHECK (Budget > 0),
     CONSTRAINT chk_org_status CHECK (Activity_Status IN ('Active', 'Inactive', 'Suspended'))
-    /* He quitado el CHECK de la fecha y el email por ser los que suelen dar error de sintaxis */
 );
 
 /* TABLA PUBLISH */
 CREATE TABLE PUBLISH (
-    Public_Code        NUMBER(14) PRIMARY KEY,
-    Public_Funding     NUMBER(14,2),
-    Head_Financing     VARCHAR2(100),
+    Public_Code         NUMBER(14) PRIMARY KEY,
+    Public_Funding      NUMBER(14,2),
+    Head_Financing      VARCHAR2(100),
     Unanimity_Decisions VARCHAR2(5),
-    Organisation_Code  NUMBER(14),
-    
+    Organisation_Code   NUMBER(14),
     CONSTRAINT fk_publish_org FOREIGN KEY (Organisation_Code) 
         REFERENCES ORGANISATION(Organisation_Code) ON DELETE CASCADE,
     CONSTRAINT chk_pub_funding CHECK (Public_Funding >= 0)
@@ -36,7 +33,6 @@ CREATE TABLE PRIVATE (
     Private_Financing  NUMBER(14,2),
     Advertising        VARCHAR2(255),
     Organisation_Code  NUMBER(14),
-    
     CONSTRAINT fk_private_org FOREIGN KEY (Organisation_Code) 
         REFERENCES ORGANISATION(Organisation_Code) ON DELETE CASCADE,
     CONSTRAINT chk_priv_funding CHECK (Private_Financing >= 0)
@@ -55,7 +51,6 @@ CREATE TABLE ACTION (
     State_Action       VARCHAR2(50),
     Impact_Assessment  VARCHAR2(255),
     Duration           NUMBER(5),
-    
     CONSTRAINT chk_act_budget   CHECK (Budget > 0),
     CONSTRAINT chk_act_dates    CHECK (Start_Date <= End_Date),
     CONSTRAINT chk_act_duration CHECK (Duration > 0)
@@ -115,41 +110,16 @@ CREATE TABLE LOGISTICS (
 );
 
 /* INSERTS */
-INSERT INTO ORGANISATION (Organisation_Code, Name, Type_organisation, Sector, Direction, Contact_Telephone, Financing_Type, Contact_Email, Budget, Registration_Date, Activity_Status)
-VALUES (10, 'Banco de Alimentos Solidario', 'ONG', 'Alimentación', 'Calle Esperanza 45, Sevilla', '954001122', 'Privada', 'contacto@bancoalim.es', 250000.00, TO_DATE('2020-01-10', 'YYYY-MM-DD'), 'Active');
+INSERT INTO ORGANISATION VALUES (10, 'Banco de Alimentos Solidario', 'ONG', 'Alimentación', 'Calle Esperanza 45, Sevilla', '954001122', 'Privada', 'contacto@bancoalim.es', 250000.00, TO_DATE('2020-01-10', 'YYYY-MM-DD'), 'Active');
+INSERT INTO ORGANISATION VALUES (20, 'Cáritas Diocesana', 'Religiosa', 'Social', 'Plaza de la Iglesia 1, Madrid', '910112233', 'Mixta', 'ayuda@caritas.es', 1500000.00, TO_DATE('2018-03-15', 'YYYY-MM-DD'), 'Active');
+INSERT INTO ORGANISATION VALUES (30, 'Fundación contra la Pobreza Infantil', 'Fundación', 'Infancia', 'Paseo de Gracia 12, Barcelona', '932003344', 'Pública', 'info@pobrezainfantil.org', 600000.00, TO_DATE('2021-06-20', 'YYYY-MM-DD'), 'Active');
 
-INSERT INTO ORGANISATION (Organisation_Code, Name, Type_organisation, Sector, Direction, Contact_Telephone, Financing_Type, Contact_Email, Budget, Registration_Date, Activity_Status)
-VALUES (20, 'Cáritas Diocesana', 'Religiosa', 'Social', 'Plaza de la Iglesia 1, Madrid', '910112233', 'Mixta', 'ayuda@caritas.es', 1500000.00, TO_DATE('2018-03-15', 'YYYY-MM-DD'), 'Active');
+INSERT INTO PUBLISH VALUES (101, 900000.00, 'Ministerio de Asuntos Sociales', 'YES', 20);
 
-INSERT INTO ORGANISATION (Organisation_Code, Name, Type_organisation, Sector, Direction, Contact_Telephone, Financing_Type, Contact_Email, Budget, Registration_Date, Activity_Status)
-VALUES (30, 'Fundación contra la Pobreza Infantil', 'Fundación', 'Infancia', 'Paseo de Gracia 12, Barcelona', '932003344', 'Pública', 'info@pobrezainfantil.org', 600000.00, TO_DATE('2021-06-20', 'YYYY-MM-DD'), 'Active');
-
-INSERT INTO PUBLISH (Public_Code, Public_Funding, Head_Financing, Unanimity_Decisions, Organisation_Code)
-VALUES (101, 900000.00, 'Ministerio de Asuntos Sociales', 'YES', 20);
-
-INSERT INTO PUBLISH (Public_Code, Public_Funding, Head_Financing, Unanimity_Decisions, Organisation_Code)
-VALUES (102, 450000.00, 'Ayuntamiento de Barcelona', 'NO', 30);
-
-INSERT INTO PUBLISH (Public_Code, Public_Funding, Head_Financing, Unanimity_Decisions, Organisation_Code)
-VALUES (103, 150000.00, 'Comunidad Autónoma', 'YES', 20);
-
-INSERT INTO PRIVATE (Private_Code, Private_Financing, Advertising, Organisation_Code)
-VALUES (201, 120000.00, 'Campaña Operación Kilo Navidad', 10);
-
-INSERT INTO PRIVATE (Private_Code, Private_Financing, Advertising, Organisation_Code)
-VALUES (202, 50000.00, 'Donaciones de Supermercados Locales', 10);
-
-INSERT INTO PRIVATE (Private_Code, Private_Financing, Advertising, Organisation_Code)
-VALUES (203, 80000.00, 'Gala Benéfica Anual', 10);
+INSERT INTO PRIVATE VALUES (201, 120000.00, 'Campaña Operación Kilo Navidad', 10);
 
 INSERT INTO ACTION (Actions_Code, Name_Action, Type_Action, Description, Start_Date, End_Date, Budget, Expected_Result, State_Action, Impact_Assessment, Duration)
-VALUES (501, 'Comedor Social Invierno', 'Asistencia', 'Reparto de menús diarios a personas sin hogar', TO_DATE('2025-11-01', 'YYYY-MM-DD'), TO_DATE('2025-03-01', 'YYYY-MM-DD'), 80000.00, 'Reducción desnutrición local', 'Active', 'Alto impacto', 120);
-
-INSERT INTO ACTION (Actions_Code, Name_Action, Type_Action, Description, Start_Date, End_Date, Budget, Expected_Result, State_Action, Impact_Assessment, Duration)
-VALUES (502, 'Taller Empleo Joven', 'Formación', 'Capacitación profesional para jóvenes', TO_DATE('2025-05-01', 'YYYY-MM-DD'), TO_DATE('2025-12-01', 'YYYY-MM-DD'), 35000.00, 'Inserción laboral del 40%', 'Active', 'Mejora empleabilidad', 210);
-
-INSERT INTO ACTION (Actions_Code, Name_Action, Type_Action, Description, Start_Date, End_Date, Budget, Expected_Result, State_Action, Impact_Assessment, Duration)
-VALUES (503, 'Becas Material Escolar', 'Educación', 'Entrega de material a familias sin recursos', TO_DATE('2025-09-01', 'YYYY-MM-DD'), TO_DATE('2025-10-15', 'YYYY-MM-DD'), 20000.00, 'Cobertura 500 niños', 'Completed', 'Positivo', 45);
+VALUES (501, 'Comedor Social Invierno', 'Asistencia', 'Reparto de menús diarios', TO_DATE('2025-11-01', 'YYYY-MM-DD'), TO_DATE('2026-03-01', 'YYYY-MM-DD'), 80000.00, 'Éxito', 'Active', 'Alto', 120);
 
 INSERT INTO VOLUNTEER (Volunteer_Code, DNI, Name, Surname1, Surname2, Age, Start_Date, End_Date, Contact, Specialisation, Contract_Duration)
 VALUES (301, '44556677B', 'Elena', 'Gómez', 'Sanz', 34, TO_DATE('2025-01-01', 'YYYY-MM-DD'), TO_DATE('2025-12-31', 'YYYY-MM-DD'), 'elena.g@social.org', 'Trabajadora Social', 365);
