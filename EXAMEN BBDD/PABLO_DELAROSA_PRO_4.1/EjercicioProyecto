@@ -1,0 +1,134 @@
+
+
+
+
+-- ORGANISATION
+CREATE TABLE Organisation (
+    Organisation_Code     VARCHAR(20) PRIMARY KEY,
+    Name                  VARCHAR(150) UNIQUE NOT NULL,
+    Type_Organisation     VARCHAR(50) NOT NULL,
+    Sector                VARCHAR(50),
+    Direction             VARCHAR(200),
+    Contact_Telephone     VARCHAR(20),
+    Financing_Type        VARCHAR(50),
+    Contact_Email         VARCHAR(150) NOT NULL,
+    Budget                NUMBER (16) NOT NULL,
+    Registration_Date     DATE NOT NULL,
+    Activity_Status       VARCHAR(20) NOT NULL,
+
+    CONSTRAINT chk_org_budget CHECK (Budget > 0),
+    CONSTRAINT chk_org_status CHECK (Activity_Status IN ('Active','Inactive','Suspended')),
+    CONSTRAINT chk_org_email CHECK (Contact_Email ~ '^[^@]+@[^@]+\\.[^@]+$'),
+    CONSTRAINT chk_org_regdate CHECK (Registration_Date <= CURRENT_DATE)
+);
+
+-- PUBLISH (Public organisation)
+CREATE TABLE Publish (
+    Public_Code           VARCHAR(20) PRIMARY KEY,
+    Public_Funding        NUMBER (16) NOT NULL,
+    Head_Financing        VARCHAR(150),
+    Unanimity_Decisions   BOOLEAN,
+    Organisation_Code     VARCHAR(20) NOT NULL,
+
+    CONSTRAINT chk_publish_funding CHECK (Public_Funding >= 0),
+    CONSTRAINT fk_publish_org FOREIGN KEY (Organisation_Code)
+        REFERENCES Organisation(Organisation_Code)
+        ON DELETE CASCADE
+);
+
+-- PRIVATE (Private organisation)
+CREATE TABLE Private (
+    Private_Code          VARCHAR(20) PRIMARY KEY,
+    Private_Financing     NUMBER (16) NOT NULL,
+    Advertising           BOOLEAN,
+    Organisation_Code     VARCHAR(20) NOT NULL,
+
+    CONSTRAINT chk_private_funding CHECK (Private_Financing >= 0),
+    CONSTRAINT fk_private_org FOREIGN KEY (Organisation_Code)
+        REFERENCES Organisation(Organisation_Code)
+        ON DELETE CASCADE
+);
+
+-- ACTION
+CREATE TABLE Action (
+    Actions_Code          VARCHAR(20) PRIMARY KEY,
+    Name_Action           VARCHAR(150) UNIQUE NOT NULL,
+    Type_Action           VARCHAR(50),
+    Description           TEXT,
+    Start_Date            DATE NOT NULL,
+    End_Date              DATE NOT NULL,
+    Budget                NUMBER (16) NOT NULL,
+    Expected_Result       TEXT,
+    State_Action          VARCHAR(30),
+    Impact_Assessment     TEXT,
+    Duration              INTEGER NOT NULL,
+
+    CONSTRAINT chk_action_budget CHECK (Budget > 0),
+    CONSTRAINT chk_action_dates CHECK (Start_Date <= End_Date),
+    CONSTRAINT chk_action_duration CHECK (Duration > 0)
+);
+
+-- VOLUNTEER
+CREATE TABLE Volunteer (
+    Volunteer_Code        VARCHAR(20) PRIMARY KEY,
+    DNI                   CHAR(9) UNIQUE NOT NULL,
+    Name                  VARCHAR(100) NOT NULL,
+    Surname1              VARCHAR(100) NOT NULL,
+    Surname2              VARCHAR(100),
+    Age                   INTEGER NOT NULL,
+    Start_Date            DATE NOT NULL,
+    End_Date              DATE NOT NULL,
+    Contact               VARCHAR(150),
+    Specialisation        VARCHAR(100),
+    Contract_Duration     INTEGER NOT NULL,
+
+    CONSTRAINT chk_vol_age CHECK (Age >= 18),
+    CONSTRAINT chk_vol_contract CHECK (Contract_Duration > 0),
+    CONSTRAINT chk_vol_dates CHECK (Start_Date <= End_Date),
+    CONSTRAINT chk_vol_dni CHECK (DNI ~ '^[0-9]{8}[A-Z]$')
+);
+
+-- AREA
+CREATE TABLE Area (
+    Area_Code             VARCHAR(20) PRIMARY KEY,
+    Atmosphere            VARCHAR(50),
+    Postcode              VARCHAR(10) UNIQUE NOT NULL,
+    Community             VARCHAR(100),
+    GDP_Area              NUMBER (16)(14,2),
+    Aid_Received          NUMBER (16) NOT NULL,
+    Accessibility_Logistics BOOLEAN,
+    Unemployment_Rate     NUMBER (16)(5,2) NOT NULL,
+    Average_Education     NUMBER (16)(5,2) NOT NULL,
+
+    CONSTRAINT chk_area_aid CHECK (Aid_Received >= 0),
+    CONSTRAINT chk_area_unemployment CHECK (Unemployment_Rate >= 0 AND Unemployment_Rate <= 100),
+    CONSTRAINT chk_area_education CHECK (Average_Education >= 0 AND Average_Education <= 100)
+);
+
+-- LOGISTICS
+CREATE TABLE Logistics (
+    Logistics_Code        VARCHAR(20) PRIMARY KEY,
+    Transport             VARCHAR(100),
+    Goods                 VARCHAR(150),
+    DNI                   CHAR(9) NOT NULL,
+    Resource_Allocation   TEXT,
+    In_Charge             VARCHAR(150),
+    Cost                  NUMBER (16) NOT NULL,
+    Budget                NUMBER (16) NOT NULL,
+    Direction_Exit        VARCHAR(100),
+    Directions_Arrival    VARCHAR(100),
+
+    CONSTRAINT chk_log_cost CHECK (Cost > 0),
+    CONSTRAINT chk_log_budget CHECK (Budget >= Cost),
+    CONSTRAINT chk_log_dni CHECK (DNI ~ '^[0-9]{8}[A-Z]$'),
+    CONSTRAINT chk_log_direction CHECK (Direction_Exit = 'Spain' OR Directions_Arrival = 'Spain')
+);
+
+-- DROPS
+DROP TABLE Logistics CASCADE CONSTRAINTS PURGE;
+DROP TABLE Area CASCADE CONSTRAINTS PURGE;
+DROP TABLE Volunteer CASCADE CONSTRAINTS PURGE;
+DROP TABLE Action CASCADE CONSTRAINTS PURGE;
+DROP TABLE Private CASCADE CONSTRAINTS PURGE;
+DROP TABLE Publish CASCADE CONSTRAINTS PURGE;
+DROP TABLE Organisation CASCADE CONSTRAINTS PURGE;

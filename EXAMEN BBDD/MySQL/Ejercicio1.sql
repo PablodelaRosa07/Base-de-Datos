@@ -1,0 +1,104 @@
+/* 1. CREACIÓN DE TABLAS */
+CREATE TABLE CENTRO (
+    codcentro   NUMBER(14) PRIMARY KEY,
+    Nombre      VARCHAR2(100) UNIQUE NOT NULL,
+    Localidad   VARCHAR2(100)
+);
+
+CREATE TABLE DOCENTE (
+    coddocente  NUMBER(14) PRIMARY KEY,
+    DNI         VARCHAR2(20) UNIQUE NOT NULL,
+    Nombre      VARCHAR2(50) NOT NULL,
+    Ap1         VARCHAR2(50) NOT NULL,
+    Ap2         VARCHAR2(50),
+    Email       VARCHAR2(100), 
+    Telefono    VARCHAR2(20)   
+);
+
+CREATE TABLE CURSO_ACADEMICO (
+    codcursoacademico NUMBER(14) PRIMARY KEY,
+    Anio_Inicio       NUMBER(4) NOT NULL, 
+    Anio_Fin          NUMBER(4) NOT NULL,
+    Periodo_Academico VARCHAR2(50) 
+);
+
+CREATE TABLE ESTUDIANTE (
+    codestudiante NUMBER(14) PRIMARY KEY,
+    DNI           VARCHAR2(20) UNIQUE NOT NULL,
+    Nombre        VARCHAR2(50) NOT NULL,
+    Ap1           VARCHAR2(50) NOT NULL,
+    Ap2           VARCHAR2(50),
+    Telefono      VARCHAR2(20) 
+);
+
+CREATE TABLE CICLO_FORMATIVO (
+    codcicloformativo NUMBER(14) PRIMARY KEY,
+    Nombre            VARCHAR2(100) NOT NULL,
+    Familia_Profesional VARCHAR2(100),
+    codcentro         NUMBER(14),
+    CONSTRAINT fk_ciclo_centro FOREIGN KEY (codcentro) 
+        REFERENCES CENTRO(codcentro)
+);
+
+CREATE TABLE MODULO (
+    codmodulo           NUMBER(14) PRIMARY KEY,
+    Nombre              VARCHAR2(100) NOT NULL,
+    Curso               NUMBER(1), 
+    Horas               NUMBER(14),
+    codciclo_formativo  NUMBER(14),
+    codmodulo_requisito NUMBER(14), 
+    CONSTRAINT chk_horas_positivo CHECK (Horas > 0),
+    CONSTRAINT fk_modulo_ciclo FOREIGN KEY (codciclo_formativo) 
+        REFERENCES CICLO_FORMATIVO(codcicloformativo),
+    CONSTRAINT fk_modulo_pre FOREIGN KEY (codmodulo_requisito)
+        REFERENCES MODULO(codmodulo)
+);
+
+CREATE TABLE MATRICULA (
+    codmatricula      NUMBER(14) PRIMARY KEY,
+    codestudiante     NUMBER(14),
+    codmodulo         NUMBER(14),
+    codcursoacademico NUMBER(14),
+    Nota              NUMBER(4,2), 
+    Estado            VARCHAR2(20), 
+    CONSTRAINT fk_matri_estud FOREIGN KEY (codestudiante) 
+        REFERENCES ESTUDIANTE(codestudiante),
+    CONSTRAINT fk_matri_modulo FOREIGN KEY (codmodulo) 
+        REFERENCES MODULO(codmodulo),
+    CONSTRAINT fk_matri_curso FOREIGN KEY (codcursoacademico)
+        REFERENCES CURSO_ACADEMICO(codcursoacademico),
+    CONSTRAINT chk_nota_rango CHECK (Nota BETWEEN 0 AND 10)
+);
+
+/* 2. INSERCIÓN DE DATOS */
+INSERT INTO CENTRO VALUES (1, 'IES Tecnológico', 'Madrid');
+INSERT INTO CENTRO VALUES (2, 'Centro Integrado F.P.', 'Valencia');
+
+INSERT INTO DOCENTE VALUES (1, '11111111A', 'Juan', 'García', 'López', 'juan.garcia@edu.es', '600111222');
+INSERT INTO DOCENTE VALUES (2, '22222222B', 'María', 'Sánchez', 'Pérez', 'm.sanchez@edu.es', '600333444');
+
+INSERT INTO CURSO_ACADEMICO VALUES (1, 2024, 2025, 'Anual');
+INSERT INTO CURSO_ACADEMICO VALUES (2, 2025, 2026, 'Anual');
+
+INSERT INTO ESTUDIANTE VALUES (1, '33333333C', 'Carlos', 'Ruiz', 'Moreno', '655000111');
+INSERT INTO ESTUDIANTE VALUES (2, '44444444D', 'Ana', 'Blanco', 'Gómez', '655999888');
+
+INSERT INTO CICLO_FORMATIVO VALUES (10, 'Desarrollo de Aplicaciones Web', 'Informática y Comunicaciones', 1);
+INSERT INTO CICLO_FORMATIVO VALUES (20, 'Administración de Sistemas Informáticos', 'Informática y Comunicaciones', 2);
+
+INSERT INTO MODULO VALUES (100, 'Programación', 1, 240, 10, NULL);
+INSERT INTO MODULO VALUES (101, 'Desarrollo Web Servidor', 2, 180, 10, 100);
+
+INSERT INTO MATRICULA VALUES (1, 1, 100, 1, 8.5, 'Aprobado');
+INSERT INTO MATRICULA VALUES (2, 2, 100, 1, 4.0, 'Suspenso');
+
+COMMIT;
+
+/* 3. ELIMINACIÓN DE TABLAS (En orden inverso a su jerarquía para evitar conflictos) */
+DROP TABLE MATRICULA CASCADE CONSTRAINTS PURGE;
+DROP TABLE MODULO CASCADE CONSTRAINTS PURGE;
+DROP TABLE CICLO_FORMATIVO CASCADE CONSTRAINTS PURGE;
+DROP TABLE ESTUDIANTE CASCADE CONSTRAINTS PURGE;
+DROP TABLE DOCENTE CASCADE CONSTRAINTS PURGE;
+DROP TABLE CURSO_ACADEMICO CASCADE CONSTRAINTS PURGE;
+DROP TABLE CENTRO CASCADE CONSTRAINTS PURGE;
